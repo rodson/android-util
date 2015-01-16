@@ -28,7 +28,4 @@ public class NetworkUtil {
         return (networkInfo != null && networkInfo.isConnected() && networkInfo.getType() == ConnectivityManager.TYPE_WIFI);
     }
 
-    public static String getDeviceMac(Context context) {
-        return null;
-    }
 }
