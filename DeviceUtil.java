@@ -4,13 +4,17 @@
 package com.cvte.util;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import java.net.NetworkInterface;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Rodson
@@ -126,4 +130,46 @@ public class DeviceUtil {
         return "";
     }
 
+    /**
+     * Get time zone
+     *
+     * @param context The context of the application.
+     * @return The time zone, default 8
+     */
+    public static int getTimeZone(Context context) {
+        try {
+            Locale locale = getLocale(context);
+            Calendar calendar = Calendar.getInstance(locale);
+            if (calendar != null) {
+                return calendar.getTimeZone().getRawOffset() / 3600000;
+            }
+        } catch (Exception e) {
+            LogUtil.e("Get time zone error");
+        }
+
+        return 8;
+    }
+
+    /**
+     * Get user config locale. Use default locale if failed.
+     */
+    private static Locale getLocale(Context context) {
+        Locale  locale = null;
+        try {
+            Configuration configuration = new Configuration();
+            configuration.setToDefaults();
+            Settings.System.getConfiguration(context.getContentResolver(), configuration);
+            if (configuration != null) {
+                locale = configuration.locale;
+            }
+        } catch (Exception e) {
+            LogUtil.e("Fail to read user config locale");
+        }
+
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+
+        return locale;
+    }
 }
