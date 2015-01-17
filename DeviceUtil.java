@@ -14,6 +14,10 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.Calendar;
 import java.util.Collections;
@@ -213,6 +217,41 @@ public class DeviceUtil {
         }
 
         return accessInfo;
+    }
+
+    public static String getCpuInfo() {
+        String cpuInfo = null;
+
+        FileReader fileReader = null;
+        BufferedReader bufferedReader = null;
+
+        try {
+            fileReader = new FileReader("/proc/cpuinfo");
+            if (fileReader != null) {
+                bufferedReader = new BufferedReader(fileReader, 1024);
+                cpuInfo = bufferedReader.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            LogUtil.e("File not found exception when reading cpu info");
+        } catch (IOException e) {
+            LogUtil.e("io exception when reading cpu info");
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    LogUtil.e("io exception when closing buffered reader");
+                }
+            }
+        }
+
+        if (cpuInfo != null) {
+            int i = cpuInfo.indexOf(':') + 1;
+            cpuInfo = cpuInfo.substring(i);
+            return cpuInfo.trim();
+        }
+
+        return "";
     }
 
     /**
