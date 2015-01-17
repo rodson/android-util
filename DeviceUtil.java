@@ -6,6 +6,7 @@ package com.cvte.util;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -148,6 +149,24 @@ public class DeviceUtil {
         }
 
         return 8;
+    }
+
+    /**
+     * Get carrier name.
+     *
+     * @param context The context of the application.
+     * @return The carrier name.
+     */
+    public static String getCarrier(Context context) {
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager)
+                    context.getSystemService(Context.TELEPHONY_SERVICE);
+            return telephonyManager.getNetworkOperatorName();
+        } catch (Exception e) {
+            LogUtil.e("Get carrier failed");
+        }
+
+        return "Unknow";
     }
 
     /**
