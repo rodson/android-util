@@ -4,7 +4,10 @@
 package com.cvte.util;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -167,6 +170,49 @@ public class DeviceUtil {
         }
 
         return "Unknow";
+    }
+
+    /**
+     * Get network access info.
+     * @param context The context of the application.
+     * @return The network access info.
+     */
+    public static String[] getNetworkAccessInfo(Context context) {
+        String[] accessInfo = {"", ""};
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            if (packageManager.checkPermission("android.permission.ACCESS_NETWORK_STATE",
+                    context.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+                accessInfo[0] = "";
+                return accessInfo;
+            }
+
+            ConnectivityManager connectivityManager = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivityManager == null) {
+                accessInfo[0] = "";
+                return accessInfo;
+            }
+
+            NetworkInfo wifiNetworkInfo = connectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                accessInfo[0] = "Wi-Fi";
+                return accessInfo;
+            }
+
+            NetworkInfo mobileNetworkInfo = connectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (mobileNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
+                accessInfo[0] = "Mobile";
+                accessInfo[1] = mobileNetworkInfo.getSubtypeName();
+                return accessInfo;
+            }
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
+
+        return accessInfo;
     }
 
     /**
