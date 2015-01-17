@@ -5,6 +5,8 @@ package com.cvte.util;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -20,6 +22,7 @@ public class DeviceUtil {
 
     /**
      * Get the MAC address.
+     *
      * @param context The context of the application
      * @return Return device's mac address
      */
@@ -55,6 +58,7 @@ public class DeviceUtil {
 
     /**
      * Get device id(if null, use mac. If mac is null either, use android id)
+     *
      * @param context The context of the application
      * @return Return device's id
      */
@@ -95,6 +99,30 @@ public class DeviceUtil {
         } catch (Exception ex) {
             // for now eat exceptions
         }
+        return "";
+    }
+
+    /**
+     * Get device resolution that describe the pixels value of this display.
+     *
+     * @param context The context of the application.
+     * @return The resolution with the with*height format.
+     */
+    public static String getScreenResolution(Context context) {
+        try {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager)
+                    context.getSystemService(Context.WINDOW_SERVICE);
+            windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+
+            int width = displayMetrics.widthPixels;
+            int height = displayMetrics.heightPixels;
+
+            return "" + width + "*" + height;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "";
     }
 
