@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.net.NetworkInterface;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -252,6 +254,31 @@ public class DeviceUtil {
         }
 
         return "";
+    }
+
+    /**
+     * Get device's build info.
+     *
+     * @return A map that contains the device's build info.
+     */
+    public static HashMap<String, String> getBuildInfo() {
+        HashMap<String, String> map = new HashMap<String, String>();
+
+        try {
+            map.put("device_model", Build.MODEL);
+            map.put("os", "Android");
+            map.put("os_version", Build.VERSION.RELEASE);
+            map.put("device_board", Build.BOARD);
+            map.put("device_brand", Build.BRAND);
+            map.put("device_manutime", String.valueOf(Build.TIME));
+            map.put("device_manufacturer", Build.MANUFACTURER);
+            map.put("device_manuid", Build.ID);
+            map.put("device_name", Build.DEVICE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return map;
     }
 
     /**
