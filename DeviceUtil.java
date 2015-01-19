@@ -84,13 +84,29 @@ public class DeviceUtil {
      * @return Return device's id
      */
     public static String getDeviceId(Context context) {
-        android.telephony.TelephonyManager tm = (android.telephony.TelephonyManager) context
+        android.telephony.TelephonyManager telephonyManager = (android.telephony.TelephonyManager) context
                 .getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = tm.getDeviceId();
+
+        if (telephonyManager == null) {
+            LogUtil.e("No IMEI.");
+        }
+
+        String deviceId = "";
+
+        try {
+            if (checkPermissionGranted(context, "android.permission.READ_PHONE_STATE")) {
+                deviceId = telephonyManager.getDeviceId();
+            }
+        } catch (Exception e) {
+            LogUtil.e("No IMEI.");
+        }
+
         if (TextUtils.isEmpty(deviceId)) {
+            LogUtil.e("No IMEI.");
             deviceId = getDeviceMac(context);
 
             if (TextUtils.isEmpty(deviceId)) {
+                LogUtil.e("Get mac address failed. Try to use Secure.ANDROID_ID instead");
                 deviceId = android.provider.Settings.Secure.getString(
                         context.getContentResolver(),android.provider.Settings.Secure.ANDROID_ID);
             }
@@ -194,8 +210,7 @@ public class DeviceUtil {
         String[] accessInfo = {"", ""};
         try {
             PackageManager packageManager = context.getPackageManager();
-            if (packageManager.checkPermission("android.permission.ACCESS_NETWORK_STATE",
-                    context.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+            if (!checkPermissionGranted(context, "android.permission.ACCESS_NETWORK_STATE")) {
                 accessInfo[0] = "";
                 return accessInfo;
             }
@@ -338,5 +353,14 @@ public class DeviceUtil {
         }
 
         return locale;
+    }
+
+    private static boolean checkPermissionGranted(Context context, String permission) {
+        PackageManager packageManager = context.getPackageManager();
+        if (packageManager.checkPermission(permission, context.getPackageName())
+                != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        return true;
     }
 }
