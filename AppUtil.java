@@ -52,6 +52,18 @@ public final class AppUtil {
         return versionCode;
     }
 
+    public static String getVersionName(Context context) {
+        String versionName = "";
+        try {
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
+            versionName = pi.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return versionName;
+    }
+
     public static File getApkFile(Context context) {
         File file = null;
         try {
