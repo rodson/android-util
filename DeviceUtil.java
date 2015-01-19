@@ -282,6 +282,35 @@ public class DeviceUtil {
     }
 
     /**
+     * Get device's locale info(country and language).
+     *
+     * @param context The context of the application.
+     * @return result[0] for country, result[1] for language.
+     */
+    public static String[] getLocaleInfo(Context context) {
+        String[] result = new String[2];
+
+        try {
+            Locale locale = getLocale(context);
+            if (locale != null) {
+                result[0] = locale.getCountry();
+                result[1] = locale.getLanguage();
+            }
+        } catch (Exception e) {
+            LogUtil.e("Get locale info failed");
+        }
+
+        if (TextUtils.isEmpty(result[0])) {
+            result[0] = "Unknown";
+        }
+        if (TextUtils.isEmpty(result[1])) {
+            result[1] = "Unknown";
+        }
+
+        return result;
+    }
+
+    /**
      * Get user config locale. Use default locale if failed.
      */
     private static Locale getLocale(Context context) {
