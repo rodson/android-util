@@ -33,6 +33,13 @@ import java.util.Locale;
  * @since 1.0
  */
 public class DeviceUtil {
+    private static final int DEFAULT_TIME_ZONE = 8;
+
+    private static final String ACCESS_WIFI = "Wi-Fi";
+    private static final String ACCESS_MOBILE = "Mobile";
+
+    private static final String NETWORT_ETHERNET = "eth0";
+    private static final String NETWORT_WIFI = "wlan0";
 
     /**
      * Get the MAC address.
@@ -50,13 +57,13 @@ public class DeviceUtil {
         }
 
         // Get ethernet mac address
-        deviceMac = getMACAddress("eth0");
+        deviceMac = getMACAddress(NETWORT_ETHERNET);
         if (!TextUtils.isEmpty(deviceMac)) {
             return deviceMac;
         }
 
         // Get wifi mac address
-        deviceMac = getMACAddress("wlan0");
+        deviceMac = getMACAddress(NETWORT_WIFI);
         if (!TextUtils.isEmpty(deviceMac)) {
             return deviceMac;
         }
@@ -157,7 +164,7 @@ public class DeviceUtil {
             LogUtil.e("Get time zone error");
         }
 
-        return 8;
+        return DEFAULT_TIME_ZONE;
     }
 
     /**
@@ -203,14 +210,14 @@ public class DeviceUtil {
             NetworkInfo wifiNetworkInfo = connectivityManager
                     .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             if (wifiNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                accessInfo[0] = "Wi-Fi";
+                accessInfo[0] = ACCESS_WIFI;
                 return accessInfo;
             }
 
             NetworkInfo mobileNetworkInfo = connectivityManager
                     .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             if (mobileNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                accessInfo[0] = "Mobile";
+                accessInfo[0] = ACCESS_MOBILE;
                 accessInfo[1] = mobileNetworkInfo.getSubtypeName();
                 return accessInfo;
             }
