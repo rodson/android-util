@@ -72,4 +72,30 @@ public class MD5 {
             }
         }
     }
+
+    public static String calculateMD5(String content) {
+        if (content == null) {
+            return null;
+        }
+
+        try {
+            byte[] contentByteArray = content.getBytes();
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(contentByteArray);
+            byte[] resultByteArray = messageDigest.digest();
+            StringBuffer result = new StringBuffer();
+            int length = resultByteArray.length;
+            for (int i = 0; i < length; i++) {
+                result.append(
+                        String.format("%02X", new Object[] { Byte.valueOf(resultByteArray[i]) }));
+            }
+
+            return result.toString();
+        } catch (Exception e) {
+            LogUtil.e("Calculate md5 error");
+        }
+
+        return content.replaceAll("[^[a-z][A-Z][0-9][.][_]]", "");
+    }
 }
