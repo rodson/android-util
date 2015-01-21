@@ -30,6 +30,14 @@ public class NetworkResponse {
     /** Network roundtrip time in milliseconds. */
     public final long networkTimes;
 
+    /**
+     * Creates a new network response.
+     * @param statusCode The HTTP status code
+     * @param data Response body
+     * @param headers Headers returned with this response, or null for none
+     * @param notModified True if the server returned a 304 and the data was already in cache
+     * @param networkTimeMs Round-trip network time to receive network response
+     */
     public NetworkResponse(int statusCode, byte[] data, Map<String, String> headers,
                            boolean notModified, long networkTimeMs) {
         this.statusCode = statusCode;
