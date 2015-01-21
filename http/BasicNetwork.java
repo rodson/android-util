@@ -9,6 +9,7 @@ import com.cvte.util.http.error.NoConnectionError;
 import com.cvte.util.http.error.ResponseError;
 import com.cvte.util.http.error.ServerError;
 import com.cvte.util.http.error.TimeoutError;
+import com.cvte.util.http.request.Request;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

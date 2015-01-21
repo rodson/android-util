@@ -3,7 +3,8 @@
  */
 package com.cvte.util.http;
 
-import com.cvte.util.http.Request.Method;
+import com.cvte.util.http.request.Request;
+import com.cvte.util.http.request.Request.Method;
 import com.cvte.util.http.error.AuthFailureError;
 
 import org.apache.http.Header;

@@ -1,6 +1,7 @@
 package com.cvte.util.http;
 
 import com.cvte.util.http.error.ResponseError;
+import com.cvte.util.http.request.Request;
 
 /**
  * @author Rodson

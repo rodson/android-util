@@ -1,9 +1,15 @@
 /**
  * Copyright © 2015 CVTE. All Rights Reserved.
  */
-package com.cvte.util.http;
+package com.cvte.util.http.request;
 
+import com.cvte.util.http.Cache;
+import com.cvte.util.http.DefaultRetryPolicy;
+import com.cvte.util.http.NetworkResponse;
+import com.cvte.util.http.Response;
+import com.cvte.util.http.RetryPolicy;
 import com.cvte.util.http.error.AuthFailureError;
+import com.cvte.util.http.error.ResponseError;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -16,9 +22,7 @@ import java.util.Map;
  * @date 1/21/15
  * @since 1.0
  */
-public class Request<T> implements Comparable<Request<T>> {
-    private static final int DEFAULT_TIMEOUT_MS = 2500;
-
+public abstract class Request<T> {
     /**
      * Default encoding for POST or PUT parameters.
      */
@@ -51,6 +55,9 @@ public class Request<T> implements Comparable<Request<T>> {
     /** The retry policy for this request. */
     private RetryPolicy mRetryPolicy;
 
+    /** Listener interface for errors. */
+    private final Response.ErrorListener mErrorListener;
+
     /**
      * When a request can be retrieved from cache but must be refreshed from
      * the network, the cache entry will be stored here so that in the event of
@@ -58,9 +65,11 @@ public class Request<T> implements Comparable<Request<T>> {
      */
     private Cache.Entry mCacheEntry = null;
 
-    public Request(int method, String url) {
+    public Request(int method, String url, Response.ErrorListener listener) {
         mMethod = method;
         mUrl = url;
+        mErrorListener = listener;
+        setRetryPolicy(new DefaultRetryPolicy());
     }
 
     /**
@@ -187,11 +196,49 @@ public class Request<T> implements Comparable<Request<T>> {
      * Returns the socket timeout in milliseconds.
      */
     public final int getTimeoutMs() {
-        return DEFAULT_TIMEOUT_MS;
+        return mRetryPolicy.getCurrentTimeout();
     }
 
-    @Override
-    public int compareTo(Request<T> another) {
-        return 0;
+    /**
+     * Subclasses must implement this to parse the raw network response
+     * and return an appropriate response type. This method will be
+     * called from a worker thread.  The response will not be delivered
+     * if you return null.
+     * @param response Response from the network
+     * @return The parsed response, or null in the case of an error
+     */
+    abstract public Response<T> parseNetworkResponse(NetworkResponse response);
+
+    /**
+     * Subclasses can override this method to parse 'networkError' and return a more specific error.
+     *
+     * <p>The default implementation just returns the passed 'networkError'.</p>
+     *
+     * @param responseError the error retrieved from the network
+     * @return an NetworkError augmented with additional information
+     */
+    public ResponseError parseNetworkError(ResponseError responseError) {
+        return responseError;
+    }
+
+    /**
+     * Subclasses must implement this to perform delivery of the parsed
+     * response to their listeners.  The given response is guaranteed to
+     * be non-null; responses that fail to parse are not delivered.
+     * @param response The parsed response returned by
+     * {@link #parseNetworkResponse(NetworkResponse)}
+     */
+    abstract public void deliverResponse(T response);
+
+    /**
+     * Delivers error message to the ErrorListener that the Request was
+     * initialized with.
+     *
+     * @param error Error details
+     */
+    public void deliverError(ResponseError error) {
+        if (mErrorListener != null) {
+            mErrorListener.onErrorResponse(error);
+        }
     }
 }
