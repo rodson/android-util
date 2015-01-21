@@ -1,7 +1,9 @@
 /**
  * Copyright © 2015 CVTE. All Rights Reserved.
  */
-package com.cvte.util.http;
+package com.cvte.util.http.error;
+
+import com.cvte.util.http.NetworkResponse;
 
 /**
  * @author Rodson

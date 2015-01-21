@@ -1,9 +1,11 @@
 /**
  * Copyright © 2015 CVTE. All Rights Reserved.
  */
-package com.cvte.util.http;
+package com.cvte.util.http.error;
 
 import android.content.Intent;
+
+import com.cvte.util.http.NetworkResponse;
 
 /**
  * @author Rodson

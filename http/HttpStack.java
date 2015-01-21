@@ -4,6 +4,7 @@
 package com.cvte.util.http;
 
 import com.cvte.util.http.Request.Method;
+import com.cvte.util.http.error.AuthFailureError;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -40,12 +41,13 @@ public class HttpStack {
      * @param additionalHeader Additional headers to be sent together
      * @return The HTTP response
      * @throws IOException
-     * @throws AuthFailureError
+     * @throws com.cvte.util.http.error.AuthFailureError
      */
     public HttpResponse performRequest(Request<?> request, Map<String, String> additionalHeader)
             throws IOException, AuthFailureError {
         String url = request.getUrl();
         HashMap<String, String> map = new HashMap<String, String>();
+        map.putAll(request.getHeader());
         map.putAll(additionalHeader);
         URL parseUrl = new URL(url);
         HttpURLConnection connection = openConnection(parseUrl, request);

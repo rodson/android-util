@@ -3,8 +3,11 @@
  */
 package com.cvte.util.http;
 
+import com.cvte.util.http.error.AuthFailureError;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -45,9 +48,29 @@ public class Request<T> implements Comparable<Request<T>> {
      */
     private final String mUrl;
 
+    /** The retry policy for this request. */
+    private RetryPolicy mRetryPolicy;
+
+    /**
+     * When a request can be retrieved from cache but must be refreshed from
+     * the network, the cache entry will be stored here so that in the event of
+     * a "Not Modified" response, we can be sure it hasn't been evicted from cache.
+     */
+    private Cache.Entry mCacheEntry = null;
+
     public Request(int method, String url) {
         mMethod = method;
         mUrl = url;
+    }
+
+    /**
+     * Sets the retry policy for this request.
+     *
+     * @return This Request object to allow for chaining.
+     */
+    public Request<?> setRetryPolicy(RetryPolicy retryPolicy) {
+        mRetryPolicy = retryPolicy;
+        return this;
     }
 
     /**
@@ -62,6 +85,41 @@ public class Request<T> implements Comparable<Request<T>> {
      */
     public int getMethod() {
         return mMethod;
+    }
+
+    /**
+     * Annotates this request with an entry retrieved for it from cache.
+     * Used for cache coherency support.
+     *
+     * @return This Request object to allow for chaining.
+     */
+    public Request<?> setCacheEntry(Cache.Entry entry) {
+        mCacheEntry = entry;
+        return this;
+    }
+
+    /**
+     * Returns the annotated cache entry, or null if there isn't one.
+     */
+    public Cache.Entry getCacheEntry() {
+        return mCacheEntry;
+    }
+
+    /**
+     * Returns a list of extra HTTP headers to go along with this request. Can
+     * throw {@link com.cvte.util.http.error.AuthFailureError} as authentication may be requied to provide these values.
+     *
+     * @throws com.cvte.util.http.error.AuthFailureError In the event of auth failures.
+     */
+    public Map<String, String> getHeader() throws AuthFailureError {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Returns the retry policy that should be used  for this request.
+     */
+    public RetryPolicy getRetryPolicy() {
+        return mRetryPolicy;
     }
 
     /**
