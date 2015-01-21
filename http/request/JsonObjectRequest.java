@@ -62,7 +62,7 @@ public class JsonObjectRequest extends JsonRequest<JSONObject> {
     }
 
     @Override
-    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+    public Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
         try {
             String jsonString =
                 new String(response.data, HttpHeaderParser.parseCharset(response.headers));
