@@ -16,8 +16,18 @@ public class HttpSender {
     /** Network interface for performing request. */
     private final Network mNetwork;
 
-    public HttpSender(Network networt) {
-        mNetwork = networt;
+    private static HttpSender sInstance;
+
+    public static HttpSender getInstance() {
+        if (sInstance == null) {
+            sInstance = new HttpSender();
+        }
+        return sInstance;
+    }
+
+    private HttpSender() {
+        HttpStack stack = new HttpStack();
+        mNetwork = new BasicNetwork(stack);
     }
 
     public void send(Request<?> request) {
