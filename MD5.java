@@ -98,4 +98,27 @@ public class MD5 {
 
         return content.replaceAll("[^[a-z][A-Z][0-9][.][_]]", "");
     }
+
+    public static String calculateMD5Hex(String content) {
+        if (TextUtils.isEmpty(content)) {
+            return "";
+        }
+
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.update(content.getBytes());
+            byte[] md5Byte = messageDigest.digest();
+
+            StringBuffer resultBuffer = new StringBuffer();
+            for (int i = 0; i < md5Byte.length; i++) {
+                int j = 0xFF & md5Byte[i];
+                resultBuffer.append(Integer.toHexString(j));
+            }
+            return resultBuffer.toString();
+        } catch (NoSuchAlgorithmException e) {
+            LogUtil.e("Get MD5 error");
+        }
+
+        return "";
+    }
 }
