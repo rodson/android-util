@@ -74,7 +74,7 @@ public class DeviceUtil {
             return deviceMac;
         }
 
-        return deviceMac;
+        return "";
     }
 
     /**
