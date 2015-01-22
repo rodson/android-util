@@ -36,6 +36,10 @@ public class HttpStack {
 
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
+    public HttpStack() {
+
+    }
+
     /**
      * Performs an HTTP request with the given parameters
      * @param request The request to perform
