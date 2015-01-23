@@ -1,10 +1,11 @@
 package com.cvte.util.http;
 
-import android.os.AsyncTask;
-import android.os.SystemClock;
+import android.os.Handler;
+import android.os.Looper;
 
-import com.cvte.util.http.error.ResponseError;
 import com.cvte.util.http.request.Request;
+
+import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * @author Rodson
@@ -15,6 +16,13 @@ import com.cvte.util.http.request.Request;
 public class HttpSender {
     /** Network interface for performing request. */
     private final Network mNetwork;
+
+    /** The queue of requests that are actually going out to the network. */
+    private final PriorityBlockingQueue<Request<?>> mNetworkQueue =
+            new PriorityBlockingQueue<Request<?>>();
+
+    /** The network dispatch */
+    private NetworkDispatcher mNetworkDispatcher;
 
     private static HttpSender sInstance;
 
@@ -30,49 +38,28 @@ public class HttpSender {
         mNetwork = new BasicNetwork(stack);
     }
 
-    public void send(Request<?> request) {
-        new AsyncHttpRequestTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, request);
+    /**
+     * Start the thread used to dispatch network request.
+     */
+    public void start() {
+        if (mNetworkDispatcher == null) {
+            mNetworkDispatcher = new NetworkDispatcher(mNetworkQueue, mNetwork,
+                    new ExecutorDelivery(new Handler(Looper.getMainLooper())));
+            mNetworkDispatcher.start();
+        }
     }
 
-    private class AsyncHttpRequestTask extends AsyncTask<Request<?>, Integer, Response> {
-        private Request<?> mRequest;
-        private ResponseError mResponseError;
-        private long mStartTimeMs;
-
-        @Override
-        protected void onPreExecute() {
-            mStartTimeMs = SystemClock.elapsedRealtime();
+    /**
+     * Stop the thread used to dipatch network request.
+     */
+    public void stop() {
+        if (mNetworkDispatcher != null) {
+            mNetworkDispatcher.quit();
+            mNetworkDispatcher = null;
         }
+    }
 
-        @Override
-        protected Response doInBackground(Request<?>... requests) {
-            mRequest = requests[0];
-            try {
-                NetworkResponse networkResponse = mNetwork.performRequest(mRequest);
-                Response<?> response = mRequest.parseNetworkResponse(networkResponse);
-                return response;
-            } catch (ResponseError responseError) {
-                mResponseError = mRequest.parseNetworkError(responseError);
-            } catch (Exception e) {
-                ResponseError responseError = new ResponseError(e);
-                responseError.setNetworkTimeMs(SystemClock.elapsedRealtime() - mStartTimeMs);
-                mResponseError = responseError;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Response response) {
-            Request request = mRequest;
-
-            if (mResponseError != null) {
-                request.deliverError(mResponseError);
-            }
-
-            if (response != null) {
-                request.deliverResponse(response.result);
-            }
-
-        }
+    public void send(Request<?> request) {
+        mNetworkQueue.add(request);
     }
 }
