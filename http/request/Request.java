@@ -22,7 +22,7 @@ import java.util.Map;
  * @date 1/21/15
  * @since 1.0
  */
-public abstract class Request<T> {
+public abstract class Request<T> implements Comparable<Request<T>> {
     /**
      * Default encoding for POST or PUT parameters.
      */
@@ -240,5 +240,10 @@ public abstract class Request<T> {
         if (mErrorListener != null) {
             mErrorListener.onErrorResponse(error);
         }
+    }
+
+    @Override
+    public int compareTo(Request<T> another) {
+        return 0;
     }
 }
