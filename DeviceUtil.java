@@ -287,15 +287,16 @@ public class DeviceUtil {
         HashMap<String, String> map = new HashMap<String, String>();
 
         try {
-            map.put("device_model", Build.MODEL);
+            map.put("device_model", TextUtils.isEmpty(Build.MODEL) ? "" : Build.MODEL);
             map.put("os", "Android");
-            map.put("os_version", Build.VERSION.RELEASE);
-            map.put("device_board", Build.BOARD);
-            map.put("device_brand", Build.BRAND);
-            map.put("device_manutime", String.valueOf(Build.TIME));
-            map.put("device_manufacturer", Build.MANUFACTURER);
-            map.put("device_manuid", Build.ID);
-            map.put("device_name", Build.DEVICE);
+            map.put("os_version", TextUtils.isEmpty(Build.VERSION.RELEASE) ? "" : Build.VERSION.RELEASE);
+            map.put("device_board", TextUtils.isEmpty(Build.BOARD) ? "" : Build.BOARD);
+            map.put("device_brand", TextUtils.isEmpty(Build.BRAND) ? "" : Build.BRAND);
+            String manutime = String.valueOf(Build.TIME);
+            map.put("device_manutime", TextUtils.isEmpty(manutime) ? "" : manutime);
+            map.put("device_manufacturer", TextUtils.isEmpty(Build.MANUFACTURER) ? "" : Build.MANUFACTURER);
+            map.put("device_manuid", TextUtils.isEmpty(Build.ID) ? "" : Build.ID);
+            map.put("device_name", TextUtils.isEmpty(Build.DEVICE) ? "" : Build.DEVICE);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -323,10 +324,10 @@ public class DeviceUtil {
         }
 
         if (TextUtils.isEmpty(result[0])) {
-            result[0] = "Unknown";
+            result[0] = "";
         }
         if (TextUtils.isEmpty(result[1])) {
-            result[1] = "Unknown";
+            result[1] = "";
         }
 
         return result;
