@@ -114,7 +114,18 @@ public class MD5 {
                 int j = 0xFF & md5Byte[i];
                 resultBuffer.append(Integer.toHexString(j));
             }
-            return resultBuffer.toString();
+            String result = resultBuffer.toString();
+
+            // Make sure the length of the digest is 32
+            int length = result.length();
+            if (length < 32) {
+                for (int i = 0; i < 32 - length; i++) {
+                    result = result + "f";
+                }
+            } else if (length > 32) {
+                result = result.substring(0, 32);
+            }
+            return result;
         } catch (NoSuchAlgorithmException e) {
             LogUtil.e("Get MD5 error");
         }
