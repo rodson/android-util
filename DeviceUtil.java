@@ -224,14 +224,16 @@ public class DeviceUtil {
 
             NetworkInfo wifiNetworkInfo = connectivityManager
                     .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (wifiNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
+            if (wifiNetworkInfo != null
+                    && wifiNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
                 accessInfo[0] = ACCESS_WIFI;
                 return accessInfo;
             }
 
             NetworkInfo mobileNetworkInfo = connectivityManager
                     .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            if (mobileNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
+            if (mobileNetworkInfo != null
+                    && mobileNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
                 accessInfo[0] = ACCESS_MOBILE;
                 accessInfo[1] = mobileNetworkInfo.getSubtypeName();
                 return accessInfo;
