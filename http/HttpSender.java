@@ -29,6 +29,7 @@ public class HttpSender {
     public static HttpSender getInstance() {
         if (sInstance == null) {
             sInstance = new HttpSender();
+            sInstance.start();
         }
         return sInstance;
     }
